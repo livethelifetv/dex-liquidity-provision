@@ -1,8 +1,9 @@
 const { SynthetixJs } = require("synthetix-js")
-const fetch = require("node-fetch")
 const { getUnlimitedOrderAmounts } = require("@gnosis.pm/dex-contracts")
 const { default_yargs } = require("../utils/default_yargs")
 const { floatToErc20Units } = require("../utils/printing_tools")
+const { estimatePrice } = require("../utils/price_utils")
+const { fetchGasPrices } = require("../utils/gas")
 const { getExchange } = require("../utils/trading_strategy_helpers")(web3, artifacts)
 
 const argv = default_yargs
@@ -38,23 +39,6 @@ const tokenDetails = async function (snxInstance, batchExchange, tokenName) {
     address: address,
     decimals: decimals,
   }
-}
-
-const gasStationURL = {
-  1: "https://safe-relay.gnosis.io/api/v1/gas-station/",
-  4: "https://safe-relay.rinkeby.gnosis.io/api/v1/gas-station/",
-}
-
-const estimationURLPrexix = {
-  1: "https://dex-price-estimator.gnosis.io//api/v1/",
-  4: "https://dex-price-estimator.rinkeby.gnosis.io//api/v1/",
-}
-
-const estimatePrice = async function (buyTokenId, sellTokenId, sellAmount, networkId) {
-  const searchCriteria = `markets/${buyTokenId}-${sellTokenId}/estimated-buy-amount/${sellAmount}?atoms=true`
-  const estimationData = await (await fetch(estimationURLPrexix[networkId] + searchCriteria)).json()
-
-  return estimationData.buyAmountInBase / estimationData.sellAmountInQuote
 }
 
 /* All prices, except those explicitly named with "inverted" refer to the price of sETH in sUSD.
@@ -156,7 +140,7 @@ module.exports = async (callback) => {
       const validFroms = Array(orders.length).fill(batchId)
       const validTos = Array(orders.length).fill(batchId)
 
-      const gasPrices = await (await fetch(gasStationURL[networkId])).json()
+      const gasPrices = await fetchGasPrices(argv.network)
       const scaledGasPrice = parseInt(gasPrices[argv.gasPrice] * argv.gasPriceScale)
       console.log(`Using current "${argv.gasPrice}" gas price scaled by ${argv.gasPriceScale}: ${scaledGasPrice}`)
       await batchExchange.placeValidFromOrders(

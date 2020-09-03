@@ -66,6 +66,18 @@ const checkCorrectnessOfDeposits = async (
   }
 }
 
+const estimationURLPrexix = {
+  1: "https://dex-price-estimator.gnosis.io//api/v1/",
+  4: "https://dex-price-estimator.rinkeby.gnosis.io//api/v1/",
+}
+
+const estimatePrice = async function (buyTokenId, sellTokenId, sellAmount, networkId) {
+  const searchCriteria = `markets/${buyTokenId}-${sellTokenId}/estimated-buy-amount/${sellAmount}?atoms=true`
+  const estimationData = await (await fetch(estimationURLPrexix[networkId] + searchCriteria)).json()
+
+  return estimationData.buyAmountInBase / estimationData.sellAmountInQuote
+}
+
 const checkFundingInTheMiddleBracket = function (
   bracketExchangeBalanceQuoteToken,
   bracketExchangeBalanceBaseToken,
@@ -245,6 +257,7 @@ module.exports = {
   areBoundsReasonable,
   checkCorrectnessOfDeposits,
   checkNoProfitableOffer,
+  estimatePrice,
   getOneinchPrice,
   isPriceReasonable,
   orderSellValueInUSD,
