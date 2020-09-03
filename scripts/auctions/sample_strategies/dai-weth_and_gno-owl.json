@@ -1,0 +1,26 @@
+[
+  {
+    "buyTokenId": 1,
+    "buyTokenSymbol": "WETH",
+    "sellTokenId": 7,
+    "sellTokenSymbol": "DAI"
+  },
+  {
+    "buyTokenId": 18,
+    "buyTokenSymbol": "GNO",
+    "sellTokenId": 0,
+    "sellTokenSymbol": "OWL"
+  },
+  {
+    "buyTokenId": 7,
+    "buyTokenSymbol": "DAI",
+    "sellTokenId": 1,
+    "sellTokenSymbol": "WETH"
+  },
+  {
+    "buyTokenId": 0,
+    "buyTokenSymbol": "OWL",
+    "sellTokenId": 18,
+    "sellTokenSymbol": "GNO"
+  }
+]
