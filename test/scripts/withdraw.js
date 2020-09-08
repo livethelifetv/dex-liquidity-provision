@@ -2,6 +2,7 @@ const BN = require("bn.js")
 const fs = require("fs").promises
 const tmp = require("tmp-promise")
 const assertNodejs = require("assert")
+const { ONE } = require("../utils/constants")
 
 const BatchExchange = artifacts.require("BatchExchange")
 const ERC20 = artifacts.require("ERC20Detailed")
@@ -116,7 +117,7 @@ contract("Withdraw script", function (accounts) {
         masterSafe: masterSafe.address,
         withdrawalFile: depositFile.path,
       }
-      const transaction = await prepareWithdrawRequest(argv, false, globalPriceStorage)
+      const transaction = await prepareWithdrawRequest(argv, ONE, false, globalPriceStorage)
       await execTransaction(masterSafe, safeOwner, transaction)
 
       for (const { amount, tokenAddress, bracketAddress } of deposits) {
@@ -140,7 +141,7 @@ contract("Withdraw script", function (accounts) {
         masterSafe: masterSafe.address,
         withdrawalFile: depositFile.path,
       }
-      const requestTx = await prepareWithdrawRequest(argv1, false, globalPriceStorage)
+      const requestTx = await prepareWithdrawRequest(argv1, ONE, false, globalPriceStorage)
       await execTransaction(masterSafe, safeOwner, requestTx)
       await waitForNSeconds(301)
 
@@ -174,7 +175,7 @@ contract("Withdraw script", function (accounts) {
         masterSafe: masterSafe.address,
         withdrawalFile: depositFile.path,
       }
-      const requestTx = await prepareWithdrawRequest(argv, false, globalPriceStorage)
+      const requestTx = await prepareWithdrawRequest(argv, ONE, false, globalPriceStorage)
       await execTransaction(masterSafe, safeOwner, requestTx)
       await waitForNSeconds(301)
 
@@ -209,7 +210,7 @@ contract("Withdraw script", function (accounts) {
         masterSafe: masterSafe.address,
         withdrawalFile: depositFile.path,
       }
-      const requestTx = await prepareWithdrawRequest(argv, false, globalPriceStorage)
+      const requestTx = await prepareWithdrawRequest(argv, ONE, false, globalPriceStorage)
       await execTransaction(masterSafe, safeOwner, requestTx)
       await waitForNSeconds(301)
 
@@ -259,7 +260,7 @@ contract("Withdraw script", function (accounts) {
       globalPriceStorage["USDC-USDC"] = { price: 1.0 }
       globalPriceStorage["WETH-USDC"] = { price: 400.0 }
 
-      const transaction = await prepareWithdrawRequest(argv, false, globalPriceStorage)
+      const transaction = await prepareWithdrawRequest(argv, ONE, false, globalPriceStorage)
       await execTransaction(masterSafe, safeOwner, transaction)
       await waitForNSeconds(301)
 
@@ -303,7 +304,7 @@ contract("Withdraw script", function (accounts) {
       globalPriceStorage["USDC-USDC"] = { price: 1.0 }
       globalPriceStorage["WETH-USDC"] = { price: 250.0 }
 
-      const transaction = await prepareWithdrawRequest(argv, false, globalPriceStorage)
+      const transaction = await prepareWithdrawRequest(argv, ONE, false, globalPriceStorage)
       await execTransaction(masterSafe, safeOwner, transaction)
 
       for (const { tokenAddress, bracketAddress } of deposits) {
@@ -334,7 +335,7 @@ contract("Withdraw script", function (accounts) {
       const globalPriceStorage = {}
       globalPriceStorage["USDC-USDC"] = { price: 1.0 }
       globalPriceStorage["WETH-USDC"] = { price: 250.0 }
-      const transaction = await prepareWithdrawRequest(argv, false, globalPriceStorage)
+      const transaction = await prepareWithdrawRequest(argv, ONE, false, globalPriceStorage)
       await execTransaction(masterSafe, safeOwner, transaction)
 
       for (const { tokenAddress, bracketAddress } of deposits) {
@@ -364,7 +365,7 @@ contract("Withdraw script", function (accounts) {
         brackets: bracketAddresses,
         tokens: [tokenInfo[0].address, tokenInfo[1].address],
       }
-      const transaction1 = await prepareWithdrawRequest(argv, false, globalPriceStorage)
+      const transaction1 = await prepareWithdrawRequest(argv, ONE, false, globalPriceStorage)
       await execTransaction(masterSafe, safeOwner, transaction1)
       await waitForNSeconds(301)
 
@@ -401,7 +402,7 @@ contract("Withdraw script", function (accounts) {
         noBalanceCheck: true,
         tokens: [tokenInfo[0].address, tokenInfo[1].address],
       }
-      const requestTransaction = await prepareWithdrawRequest(argv, false, globalPriceStorage)
+      const requestTransaction = await prepareWithdrawRequest(argv, ONE, false, globalPriceStorage)
       await execTransaction(masterSafe, safeOwner, requestTransaction)
       await waitForNSeconds(301)
 
@@ -444,7 +445,7 @@ contract("Withdraw script", function (accounts) {
         brackets: bracketAddresses,
         tokens: [tokenInfo[0].address, tokenInfo[1].address],
       }
-      const requestTransaction = await prepareWithdrawRequest(argv, false, globalPriceStorage)
+      const requestTransaction = await prepareWithdrawRequest(argv, ONE, false, globalPriceStorage)
       await execTransaction(masterSafe, safeOwner, requestTransaction)
       await waitForNSeconds(301)
 
@@ -488,7 +489,7 @@ contract("Withdraw script", function (accounts) {
         brackets: bracketAddresses,
         tokens: [tokenInfo[0].address, tokenInfo[1].address],
       }
-      const requestTx = await prepareWithdrawRequest(argv, false, globalPriceStorage)
+      const requestTx = await prepareWithdrawRequest(argv, ONE, false, globalPriceStorage)
       await execTransaction(masterSafe, safeOwner, requestTx)
       await waitForNSeconds(301)
 

@@ -43,6 +43,7 @@ module.exports = function (web3, artifacts) {
     brackets,
     tokens,
     tokenIds,
+    minimumValueForWithdrawal = ONE,
     printOutput = false,
     globalPriceStorage = {}
   ) {
@@ -108,14 +109,16 @@ module.exports = function (web3, artifacts) {
             }
             const usdValue = await amountUSDValue(amount, tokenData, globalPriceStorage)
 
-            if (usdValue.gte(ONE)) {
+            if (usdValue.gte(minimumValueForWithdrawal)) {
               withdrawals.push({
                 bracketAddress,
                 tokenAddress,
                 amount,
               })
             } else {
-              log(`Skipping request for ${tokenData.symbol} on bracket ${bracketAddress} since USD value < 1`)
+              log(
+                `Skipping request for ${tokenData.symbol} on bracket ${bracketAddress} since USD value < ${minimumValueForWithdrawal}`
+              )
             }
           })
         )
@@ -128,7 +131,12 @@ module.exports = function (web3, artifacts) {
     }
   }
 
-  const prepareWithdrawRequest = async function (argv, printOutput = false, globalPriceStorage = {}) {
+  const prepareWithdrawRequest = async function (
+    argv,
+    minimumValueForWithdrawal = ONE,
+    printOutput = false,
+    globalPriceStorage = {}
+  ) {
     const log = printOutput ? (...a) => console.log(...a) : () => {}
 
     assertGoodArguments(argv)
@@ -155,6 +163,7 @@ module.exports = function (web3, artifacts) {
       argv.brackets,
       argv.tokens,
       argv.tokenIds,
+      minimumValueForWithdrawal,
       printOutput,
       globalPriceStorage
     )
@@ -170,7 +179,7 @@ module.exports = function (web3, artifacts) {
 
     return transactionPromise
   }
-  const prepareWithdraw = async function (argv, printOutput = false, globalPriceStorage = {}) {
+  const prepareWithdraw = async function (argv, minimumValueForWithdrawal = ONE, printOutput = false, globalPriceStorage = {}) {
     const log = printOutput ? (...a) => console.log(...a) : () => {}
 
     assertGoodArguments(argv)
@@ -184,6 +193,7 @@ module.exports = function (web3, artifacts) {
       argv.brackets,
       argv.tokens,
       argv.tokenIds,
+      minimumValueForWithdrawal,
       printOutput,
       globalPriceStorage
     )
@@ -200,7 +210,12 @@ module.exports = function (web3, artifacts) {
 
     return transactionPromise
   }
-  const prepareTransferFundsToMaster = async function (argv, printOutput = false, globalPriceStorage = {}) {
+  const prepareTransferFundsToMaster = async function (
+    argv,
+    minimumValueForWithdrawal = ONE,
+    printOutput = false,
+    globalPriceStorage = {}
+  ) {
     const log = printOutput ? (...a) => console.log(...a) : () => {}
 
     assertGoodArguments(argv)
@@ -214,6 +229,7 @@ module.exports = function (web3, artifacts) {
       argv.brackets,
       argv.tokens,
       argv.tokenIds,
+      minimumValueForWithdrawal,
       printOutput,
       globalPriceStorage
     )
@@ -235,7 +251,12 @@ module.exports = function (web3, artifacts) {
 
     return transactionPromise
   }
-  const prepareWithdrawAndTransferFundsToMaster = async function (argv, printOutput = false, globalPriceStorage = {}) {
+  const prepareWithdrawAndTransferFundsToMaster = async function (
+    argv,
+    minimumValueForWithdrawal = ONE,
+    printOutput = false,
+    globalPriceStorage = {}
+  ) {
     const log = printOutput ? (...a) => console.log(...a) : () => {}
 
     assertGoodArguments(argv)
@@ -249,6 +270,7 @@ module.exports = function (web3, artifacts) {
       argv.brackets,
       argv.tokens,
       argv.tokenIds,
+      minimumValueForWithdrawal,
       printOutput,
       globalPriceStorage
     )
