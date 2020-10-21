@@ -1,6 +1,7 @@
 /**
  * @typedef {import('../typedef.js').Address} Address
  * @typedef {import('../typedef.js').Transaction} Transaction
+ * @typedef {import('../typedef.js').Transaction} SmartContract
  */
 
 module.exports = function (web3, artifacts) {
@@ -165,6 +166,15 @@ module.exports = function (web3, artifacts) {
     return web3.utils.padLeft(await web3.eth.getStorageAt(safeAddress, fallbackHandlerStorageSlot), 40)
   }
 
+  /**
+   * This function estimates an upper bound on the gas used internally by a Gnosis Safe when executing
+   * the input transaction with the input Safe. This values can be used directly to fill the safeTxGas
+   * parameter in a call to execTransaction.
+   *
+   * @param {SmartContract} masterSafe The Safe that would execute the estimate transaction.
+   * @param {Transaction} transaction Transaction for which to compute a gas estimate.
+   * @returns {number} An estimate of the gas internally used by a transaction executed in a Gnosis Safe.
+   */
   const estimateGas = async function (masterSafe, transaction) {
     const estimateCall = masterSafe.contract.methods
       .requiredTxGas(transaction.to, transaction.value, transaction.data, transaction.operation)
@@ -184,9 +194,14 @@ module.exports = function (web3, artifacts) {
     // https://docs.gnosis.io/safe/docs/contracts_tx_execution/#safe-transaction-gas-limit-estimation
     // The value returned by requiredTxGas is encoded in a revert error message. For retrieving the hex
     // encoded uint value the first 68 bytes of the error message need to be removed.
-    const txGasEstimate = parseInt(estimateResponse.substring(138), 16)
-    // Multiply with 64/63 due to EIP-150 (https://github.com/ethereum/EIPs/blob/master/EIPS/eip-150.md)
-    return Math.ceil((txGasEstimate * 64) / 63)
+    const executionGasCost = parseInt(estimateResponse.substring(138), 16)
+    // The Safe function requiredTxGas returns the exact amount spent by a Safe-internal call to execute.
+    // The parameter safeTxGas needs to also keep into account:
+    // - Some instructions run after the gas estimate is used but outside of the call (500 gas)
+    // - After execution, an event is emitted (2500 gas)
+    // - Multiply with 64/63 due to EIP-150 (https://github.com/ethereum/EIPs/blob/master/EIPS/eip-150.md)
+    const gasRequiredForExecution = Math.max(Math.ceil((executionGasCost * 64) / 63), executionGasCost + 2500) + 500
+    return gasRequiredForExecution
   }
 
   /**
